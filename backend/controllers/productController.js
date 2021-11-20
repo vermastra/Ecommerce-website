@@ -8,6 +8,7 @@ const ApiFeatures = require("../utils/apifeature")
 //create product---ADMIN
 exports.createProduct = async (req, res, next) => {
     try {
+        req.body.user = req.user.id;
         const product = await Product.create(req.body);  // other way: new Product(req.body)
         res.status(201).json({
             success: true,
@@ -93,10 +94,10 @@ exports.getProductDetails = async (req, res, next) => {
 //get all product
 exports.getAllProducts = async (req, res) => {
     try {
-        const resultPerPage=3;
-        const productCount=await Product.countDocuments();
-        const apiFeature=new ApiFeatures(Product.find(),req.query).search().filter().pagination(resultPerPage);
-        const products = await apiFeature.query ;//Product.find()
+        const resultPerPage = 3;
+        const productCount = await Product.countDocuments();
+        const apiFeature = new ApiFeatures(Product.find(), req.query).search().filter().pagination(resultPerPage);
+        const products = await apiFeature.query;//Product.find()
         res.status(201).json({
             success: true,
             products

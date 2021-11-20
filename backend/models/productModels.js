@@ -61,6 +61,11 @@ const productSchema = new mongoose.Schema({
             }
         }
     ],
+    user:{ //to know which user ceated this product
+        type:mongoose.Schema.ObjectId,
+        ref:"user",
+        required:true,
+    },
     createdAt:{
         type:Date,
         default:Date.now
