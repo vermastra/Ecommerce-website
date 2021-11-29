@@ -209,7 +209,8 @@ exports.getAllProducts = async (req, res) => {
         const products = await apiFeature.query;//Product.find()
         res.status(201).json({
             success: true,
-            products
+            products,
+            productCount
         })
     } catch (err) {
         res.send(err.message);
