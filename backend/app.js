@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const cookieparser= require("cookie-parser");
+const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 
 // const ErrorMiddleware = require("./middleware/error"); //not working*********
 
@@ -8,6 +10,8 @@ const cookieparser= require("cookie-parser");
 app.use(cookieparser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(fileUpload());
 
 //Route import
 const product = require("./routes/productRoute");

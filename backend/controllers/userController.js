@@ -2,18 +2,25 @@ const User = require("../models/userModels"); //schema
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require('crypto');
+const cloudinary = require("cloudinary");
 
 //register user
 exports.registerUser = async (req, res, next) => {
     try {
+        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+            folder: "avatars",
+            width: 150,
+            crop: "scale",
+        });
+
         const { name, email, password } = req.body;
         const user = await User.create({
             name,
             email,
             password,
             avatar: {
-                public_id: "this is a sample id",
-                url: "profilePicUrl",
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
             }
         });
 
@@ -256,12 +263,12 @@ exports.getAllUsers = async (req, res, next) => {
 //get single user detail --Admin
 exports.getSingleUser = async (req, res, next) => {
     try {
-        const user=await User.findById(req.params.id);
+        const user = await User.findById(req.params.id);
 
-        if(!user){
+        if (!user) {
             return res.status(500).json({
-                sucess:false,
-                message:`User doesn't exist with id ${req.params.id}`
+                sucess: false,
+                message: `User doesn't exist with id ${req.params.id}`
             });
         }
 
@@ -281,7 +288,7 @@ exports.updateUserRole = async (req, res, next) => {
         const newUserData = {
             name: req.body.name,
             email: req.body.email,
-            role:req.body.role,
+            role: req.body.role,
         };
 
         //it will only update those data which are given , if nothing is given then it will keep he things as it is.
@@ -309,7 +316,7 @@ exports.deleteUser = async (req, res, next) => {
 
         res.status(200).json({
             sucess: true,
-            message:"User deleted sucessfully"
+            message: "User deleted sucessfully"
         });
 
     } catch (err) {

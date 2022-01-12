@@ -1,5 +1,6 @@
 const app = require('./app');
 const dotenv = require("dotenv");
+const cloudinary = require("cloudinary");
 
 //handling uncaught exception
 process.on("uncaughtException", (err) => {
@@ -15,6 +16,14 @@ dotenv.config({ path: "backend/config/.env" });
 
 //connecting to database
 connectDataBase();
+
+//cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 
 const server = app.listen(process.env.PORT, () => {
     console.log(`server is working on port ${process.env.PORT}`)
