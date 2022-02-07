@@ -12,7 +12,6 @@ class ApiFeatures {
             }
         } : {}
 
-        // console.log(this.querystr);
         this.query = this.query.find({ ...keyword });
         return this;
     }
@@ -26,10 +25,9 @@ class ApiFeatures {
 
         // filter for price and rating
         let queryString= JSON.stringify(querystr_copy);
-        queryString=queryString.replace(/\b(gt|gte|lt|lte)\b/g,(key)=>`$${key}`); //gt-greater than, gte-equal 
+        queryString=queryString.replace(/\b(gt|gte|lt|lte)\b/g,(key)=>`$${key}`);  
 
         this.query = this.query.find(JSON.parse(queryString));
-        // console.log(queryString);
         return this;
     }
     

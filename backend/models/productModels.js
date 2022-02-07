@@ -34,7 +34,6 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         required: [true, "Please Enter Product Category"],
-        // enum
     },
     stock: {
         type: Number,
@@ -73,7 +72,7 @@ const productSchema = new mongoose.Schema({
     },
     createdAt:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     }
 })
 

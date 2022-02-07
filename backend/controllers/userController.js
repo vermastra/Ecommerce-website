@@ -12,7 +12,6 @@ exports.registerUser = async (req, res, next) => {
             width: 150,
             crop: "scale",
         });
-
         const { name, email, password } = req.body;
         const user = await User.create({
             name,
@@ -24,7 +23,7 @@ exports.registerUser = async (req, res, next) => {
             }
         });
 
-        sendToken(user, 201, res) //  why save is not used for mogodb*****
+        sendToken(user, 201, res)
 
     } catch (err) {
         res.send(err.message);
@@ -78,7 +77,7 @@ exports.logout = async (req, res, next) => {
             httpOnly: true,
         });
         res.status(200).json({
-            sucess: true,
+            success: true,
             message: "Logged Out",
         });
 
@@ -181,7 +180,7 @@ exports.getUserDetails = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
         res.status(200).json({
-            sucess: true,
+            success: true,
             user,
         })
     } catch (err) {
@@ -226,7 +225,21 @@ exports.updateProfile = async (req, res, next) => {
             email: req.body.email,
         };
 
-        //we will add cloudinary later
+        if (req.body.avatar && req.body.avatar !== "") {
+            const user = await User.findById(req.user.id);
+            const imageId = user.avatar.public_id;
+            await cloudinary.v2.uploader.destroy(imageId);
+            const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+                folder: "avatars",
+                width: 150,
+                crop: "scale",
+            });
+
+            newUserData.avatar = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            };
+        }
 
         //it will only update those data which are given , if nothing is given then it will keep he things as it is.
         const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
@@ -236,7 +249,7 @@ exports.updateProfile = async (req, res, next) => {
         });
 
         res.status(200).json({
-            sucess: true,
+            success: true,
             user
         });
 
@@ -251,7 +264,7 @@ exports.getAllUsers = async (req, res, next) => {
         const users = await User.find();
 
         res.status(200).json({
-            sucess: true,
+            success: true,
             users
         });
 
@@ -267,13 +280,13 @@ exports.getSingleUser = async (req, res, next) => {
 
         if (!user) {
             return res.status(500).json({
-                sucess: false,
+                success: false,
                 message: `User doesn't exist with id ${req.params.id}`
             });
         }
 
         res.status(200).json({
-            sucess: true,
+            success: true,
             user
         });
 
@@ -291,15 +304,22 @@ exports.updateUserRole = async (req, res, next) => {
             role: req.body.role,
         };
 
-        //it will only update those data which are given , if nothing is given then it will keep he things as it is.
-        const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+        let user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(500).json({
+                success: false,
+                message: `User doesn't exist with id ${req.params.id}`
+            });
+        }
+
+        user = await User.findByIdAndUpdate(req.params.id, newUserData, {
             new: true,
             runValidators: true,
             useFindAndModify: false,
         });
 
         res.status(200).json({
-            sucess: true,
+            success: true,
             user
         });
 
@@ -311,12 +331,22 @@ exports.updateUserRole = async (req, res, next) => {
 //Delete user Profile--Admin
 exports.deleteUser = async (req, res, next) => {
     try {
-        // const user=await User.findById(req.params.id);
-        await User.findOneAndDelete(req.params.id);
+        const user = await User.findById(req.params.id);
 
+        if (!user) {
+            return res.status(500).json({
+                success: false,
+                message: `User doesn't exist with id ${req.params.id}`
+            });
+        }
+        if (user.avatar.public_id !== "") {
+            const imageId = user.avatar.public_id;
+            await cloudinary.v2.uploader.destroy(imageId);
+        }
+        await user.remove();
         res.status(200).json({
-            sucess: true,
-            message: "User deleted sucessfully"
+            success: true,
+            message: "User deleted successfully"
         });
 
     } catch (err) {
