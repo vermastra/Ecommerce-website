@@ -8,7 +8,7 @@ exports.isAuthenticatedUser = async (req, res, next) => {
         
         if (!token) {
             return res.status(401).json({
-                sucess: false,
+                success: false,
                 message: "Please login to access this Resource",
             })
         }
@@ -26,7 +26,7 @@ exports.authorizeRole=(...roles)=>{
     return (req,res,next)=>{
         if(!roles.includes(req.user.role)){
             return res.status(403).json({
-                sucess: false,
+                success: false,
                 message: `Role ${req.user.role} is Not allowed to access this page`,
             })
         }
